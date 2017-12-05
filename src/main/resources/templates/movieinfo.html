@@ -1,0 +1,61 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Movie info</title>
+<link type="text/css" rel="stylesheet" href="/css/bootstrap.min.css"
+	th:href="@{/css/bootstrap.min.css}" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+	
+	<h3 th:inline="text">Welcome,
+		[[${#httpServletRequest.remoteUser}]]!</h3>
+	
+	<form style="position:absolute; top:2%; right:2%;" th:action="@{/logout}" method="post">
+		<input type="submit" value="Sign Out" class="btn btn-danger" />
+	</form>
+	<form style="position:absolute; top:2%; right:14%;" th:action="@{/choosemovie}">
+		<input type="submit" value="Back to main" class="btn btn-success" />
+	</form>
+	<form style="position:absolute; top:2%; right:29%;" th:action="@{/userpage}">
+		<input type="submit" value="My Watchlist" class="btn btn-success" />
+	</form>
+
+
+	<form th:object="${movie}" th:action="@{../add}" action="#"
+		method="post">
+		<table class="table table-striped">
+			<tr>
+				<th>Poster</th>
+				<th>Title</th>
+				<th>Year</th>
+				<th>Country</th>
+				<th>Director</th>
+				<th>Genre</th>
+
+			</tr>
+			<tr>
+				<td rowspan="2"><img th:src="${movie.src}" height="200px" /></td>
+				<td th:text="${movie.title}"></td>
+				<td th:text="${movie.year}"></td>
+				<td th:text="${movie.country.name}"></td>
+				<td th:text="${movie.director}"></td>
+				<td th:text="${movie.genre.name}"></td>
+			</tr>
+			<tr>
+				<td th:text="${movie.description}" colspan="5"><h5><b>Description</b></h5></td>			
+			</tr>
+			
+			<tr>
+				<td><a class="btn btn-success" th:href="@{/addmovie/{id}(id=${movie.id})}"> Add to my watchlist</a></td>
+			
+			</tr>
+			
+		</table>
+
+		
+		
+	</form>
+
+</body>
+</html>

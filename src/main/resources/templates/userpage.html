@@ -1,0 +1,54 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>My Watchlist</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link type="text/css" rel="stylesheet" href="/css/bootstrap.min.css"
+	th:href="@{/css/bootstrap.min.css}" />
+</head>
+<body>
+
+	<h3 th:inline="text">Welcome,
+		[[${#httpServletRequest.remoteUser}]]!</h3>
+
+	<form style="position:absolute; top:2%; right:2%;" th:action="@{/logout}" method="post">
+		<input type="submit" value="Sign Out" class="btn btn-danger" />
+	</form>
+	<form style="position:absolute; top:2%; right:14%;" th:action="@{/choosemovie}">
+		<input type="submit" value="Back to main" class="btn btn-success" />
+	</form>
+	
+	<h1>I want to watch:</h1>
+	
+	
+	<!-- This page should access Fav, take Movies from it and show them in a table -->
+
+	<table class="table table-striped">
+		<tr>
+			<th>Poster</th>
+			<th>Title</th>
+			<th>Year</th>
+			<th>Country</th>
+			<th>Director</th>
+			<th>Genre</th>
+			<th></th>
+
+		</tr>
+		<tr th:each="movie : ${movies}">
+			<td ><img th:src="${movie.src}" height="200px" /></td>
+			<td><a th:href="@{/movieinfo/{id}(id=${movie.id})}"><span th:text="${movie.title}"></span></a></td>
+			<td th:text="${movie.year}"></td>
+			<td th:text="${movie.country.name}"></td>
+			<td th:text="${movie.director}"></td>
+			<td th:text="${movie.genre.name}"></td>
+			
+			<td><a class="btn btn-danger"
+				th:href="@{/remove/{id}(id=${movie.id})}">Remove</a></td>
+		</tr>
+	</table>
+
+
+
+
+</body>
+</html>
