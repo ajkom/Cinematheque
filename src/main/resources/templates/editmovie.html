@@ -12,30 +12,32 @@
 	<div>
 		<form th:object="${movie}" th:action="@{../save}" action="#" method="post">
 			<input type="hidden" th:field="*{id}" class="form-control" />
-			<input type="hidden" th:field="*{src}" class="form-control" />
 			
-			<input type="text" th:field="*{title}" />
+			<input type="text" th:field="*{src}" class="form-control" />
 			<div style="clear: both; display: block; height: 10px;"></div>
 			
-			<input type="text" th:field="*{year}" />
+			<input type="text" th:field="*{title}" class="form-control"/>
 			<div style="clear: both; display: block; height: 10px;"></div>
 			
-			<select name="countries" th:field="*{country}">
+			<input type="text" th:field="*{year}" class="form-control" />
+			<div style="clear: both; display: block; height: 10px;"></div>
+			
+			<select name="countries" th:field="*{country}" class="form-control">
 				<option th:each="country: ${countries}" th:value="${country.countryid}"
 				th:text="${country.name}"></option>
 			</select>
 			<div style="clear: both; display: block; height: 10px;"></div>
 			
-			<input type="text" th:field="*{director}" />
+			<input type="text" th:field="*{director}" class="form-control"/>
 			<div style="clear: both; display: block; height: 10px;"></div>
 			
-			<select name="genres" th:field="*{genre}">
+			<select name="genres" th:field="*{genre}" class="form-control">
 				<option th:each="genre: ${genres}" th:value="${genre.genreid}"
 				th:text="${genre.name}"></option>
 			</select>
 			<div style="clear: both; display: block; height: 10px;"></div>
 			
-			<input type="text" th:field="*{description}" />
+			<input type="text" th:field="*{description}" class="form-control"/>
 			<div style="clear: both; display: block; height: 10px;"></div>
 			<input type="submit" class="btn btn-success" value="Save"></input>
 		</form>

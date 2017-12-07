@@ -48,6 +48,7 @@
 			
 			<tr>
 				<td><a class="btn btn-success" th:href="@{/addmovie/{id}(id=${movie.id})}"> Add to my watchlist</a></td>
+				<!-- only admin can access these buttons -->
 				<td sec:authorize="hasAuthority('ADMIN')"><a class="btn btn-warning"
 				th:href="@{/edit/{id}(id=${movie.id})}">Edit</a>
 				<a class="btn btn-danger"

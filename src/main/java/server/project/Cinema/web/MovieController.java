@@ -64,40 +64,6 @@ public class MovieController {
 
 		return "choosemovie";
 	}
-	
-	// ADMIN methods
-
-	// delete a movie (admin)
-	@RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
-	public String deleteMovie(@PathVariable("id") Long movieId, Model model) {
-		mrepository.delete(movieId);
-		return "redirect:/choosemovie";
-	}
-
-	// edit movie (admin)
-	@RequestMapping(value = "/edit/{id}")
-	public String editBook(@PathVariable("id") Long movieId, Model model) {
-		model.addAttribute("movie", mrepository.findOne(movieId));
-		model.addAttribute("genres", grepository.findAll());
-		model.addAttribute("countries", crepository.findAll());
-		return "editmovie";
-	}
-	
-	// add a movie (admin)
-	@RequestMapping(value = "/add")
-	public String addMovie(Model model) {
-		model.addAttribute("movie", new Movie());
-		model.addAttribute("genres", grepository.findAll());
-		model.addAttribute("countries", crepository.findAll());
-		return "addmovie";
-	}
-
-	// save movie (admin)
-	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public String save(Movie movie) {
-		mrepository.save(movie);
-		return "redirect:/choosemovie";
-	}
 
 	// show the movie page by id, description part shown
 	@RequestMapping(value = "/movieinfo/{id}")
@@ -210,7 +176,41 @@ public class MovieController {
 		return "redirect:/userpage";
 	}
 
-	// REST
+	//----------------------------- ADMIN methods -----------------------------
+
+		// delete a movie (admin)
+		@RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
+		public String deleteMovie(@PathVariable("id") Long movieId, Model model) {
+			mrepository.delete(movieId);
+			return "redirect:/choosemovie";
+		}
+
+		// edit movie (admin)
+		@RequestMapping(value = "/edit/{id}")
+		public String editBook(@PathVariable("id") Long movieId, Model model) {
+			model.addAttribute("movie", mrepository.findOne(movieId));
+			model.addAttribute("genres", grepository.findAll());
+			model.addAttribute("countries", crepository.findAll());
+			return "editmovie";
+		}
+		
+		// add a movie (admin)
+		@RequestMapping(value = "/add")
+		public String addMovie(Model model) {
+			model.addAttribute("movie", new Movie());
+			model.addAttribute("genres", grepository.findAll());
+			model.addAttribute("countries", crepository.findAll());
+			return "addmovie";
+		}
+
+		// save movie (admin)
+		@RequestMapping(value = "/save", method = RequestMethod.POST)
+		public String save(Movie movie) {
+			mrepository.save(movie);
+			return "redirect:/choosemovie";
+		}
+	
+	//----------------------------- REST -----------------------------
 
 	// RESTful service to get all movies
 	@RequestMapping(value = "/movies", method = RequestMethod.GET)
@@ -259,6 +259,19 @@ public class MovieController {
 	public @ResponseBody User findUserRest(@PathVariable("id") Long userId) {
 		return urepository.findOne(userId);
 	}
+
+	// RESTful service to get all favs
+	@RequestMapping(value = "/favs", method = RequestMethod.GET)
+	public @ResponseBody List<Fav> favListRest() {
+		return (List<Fav>) frepository.findAll();
+	}
+
+	// REST get fav by id
+	@RequestMapping(value = "/fav/{id}", method = RequestMethod.GET)
+	public @ResponseBody Fav findFavRest(@PathVariable("id") Long favId) {
+		return frepository.findOne(favId);
+	}
+	
 	
 	// RESTful service to delete movie by id
 	@RequestMapping(value = "/movie/{id}/delete", method = RequestMethod.GET)
