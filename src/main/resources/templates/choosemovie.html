@@ -24,9 +24,11 @@
 	</form>
 
 
-
-
 	<h1>Choose a movie to your taste!</h1>
+	
+	<form sec:authorize="hasAuthority('ADMIN')" th:action="@{/add}">
+		<input type="submit" value="Add movie" class="btn btn-primary" />
+	</form>
 
 	
 	<form th:action="@{/findmovie}" method="get"> 
@@ -52,7 +54,7 @@
 	<input class="btn btn-success" type="submit" value="Find a movie!"></input>
 	</form>
 	<br />
-	<td><a class="btn btn-primary" th:href="@{/showall}">Show all movies</a></td>
+	<a class="btn btn-primary" th:href="@{/showall}">Show all movies</a>
 	<br /> <br />
 	<!-- 
 	a table showing filtered movies

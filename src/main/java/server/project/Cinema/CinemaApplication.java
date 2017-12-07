@@ -159,7 +159,7 @@ public class CinemaApplication {
 			urepository.save(user2);
 			
 			// check favs
-			//frepository.save(new Fav(2, 1));
+			frepository.save(new Fav(2, 5));
 		
 			log.info("fetch fav");
 			for (Fav fav : frepository.findAll()) {

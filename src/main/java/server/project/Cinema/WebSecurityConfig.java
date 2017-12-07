@@ -22,21 +22,23 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
     protected void configure(HttpSecurity http) throws Exception {
 		http
-        .authorizeRequests().antMatchers("/css/**").permitAll() // Enable css when logged out
-        .and()
         .authorizeRequests()
-        	.antMatchers("/signup", "/saveuser").permitAll()
-        	.antMatchers("/edit/**", "/delete/**").hasRole("ADMIN")
+        	.antMatchers("/css/**").permitAll() // Enable css when logged out
+        	.antMatchers("/signup", "/saveuser", "/").permitAll()
+        	.antMatchers("/edit/**", "/delete/**", "/users/**", "/user/**", "/favs/**", "/profile/**",
+        			"/movie/*/delete").hasAuthority("ADMIN")  // old version from the slides .hasRole() not working in Spring 4
           .anyRequest().authenticated()
           .and()
-      .formLogin()
+        .formLogin()
           .loginPage("/login")
           .defaultSuccessUrl("/choosemovie")
           .permitAll()
           .and()
-      .logout()
+        .logout()
           .permitAll();
     }
+	
+	
 	
 	@Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {

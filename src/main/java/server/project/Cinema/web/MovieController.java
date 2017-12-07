@@ -28,16 +28,16 @@ import server.project.Cinema.domain.UserRepository;
 public class MovieController {
 	@Autowired
 	private GenreRepository grepository;
-	
+
 	@Autowired
 	private MovieRepository mrepository;
-	
+
 	@Autowired
 	private FavRepository frepository;
-	
+
 	@Autowired
 	private CountryRepository crepository;
-	
+
 	@Autowired
 	private UserRepository urepository;
 
@@ -47,17 +47,25 @@ public class MovieController {
 		return "login";
 	}
 	
-	// show all movies (admin)
+	// redirect to login
+	@RequestMapping(value = "/")
+	public String sendToLogin() {
+		return "redirect:login";
+	}
+
+	// show all movies
 	@RequestMapping(value = "/showall")
-	public String showALlMovies(Model model){
+	public String showALlMovies(Model model) {
 		model.addAttribute("movies", mrepository.findAll());
-		
-		//these are for dropdowns
+
+		// these are for dropdowns
 		model.addAttribute("genres", grepository.findAll());
 		model.addAttribute("countries", crepository.findAll());
-		
+
 		return "choosemovie";
 	}
+	
+	// ADMIN methods
 
 	// delete a movie (admin)
 	@RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
@@ -70,11 +78,18 @@ public class MovieController {
 	@RequestMapping(value = "/edit/{id}")
 	public String editBook(@PathVariable("id") Long movieId, Model model) {
 		model.addAttribute("movie", mrepository.findOne(movieId));
-		
-		//these are for dropdowns
 		model.addAttribute("genres", grepository.findAll());
 		model.addAttribute("countries", crepository.findAll());
 		return "editmovie";
+	}
+	
+	// add a movie (admin)
+	@RequestMapping(value = "/add")
+	public String addMovie(Model model) {
+		model.addAttribute("movie", new Movie());
+		model.addAttribute("genres", grepository.findAll());
+		model.addAttribute("countries", crepository.findAll());
+		return "addmovie";
 	}
 
 	// save movie (admin)
@@ -82,12 +97,6 @@ public class MovieController {
 	public String save(Movie movie) {
 		mrepository.save(movie);
 		return "redirect:/choosemovie";
-	}
-
-	// REST get movie by id
-	@RequestMapping(value = "/movie/{id}", method = RequestMethod.GET)
-	public @ResponseBody Movie findMovieRest(@PathVariable("id") Long movieId) {
-		return mrepository.findOne(movieId);
 	}
 
 	// show the movie page by id, description part shown
@@ -118,8 +127,8 @@ public class MovieController {
 		filtered.retainAll(country.getMovies());
 
 		model.addAttribute("movies", filtered);
-		
-		//these are for dropdowns
+
+		// these are for dropdowns
 		model.addAttribute("genres", grepository.findAll());
 		model.addAttribute("countries", crepository.findAll());
 		return "choosemovie";
@@ -133,16 +142,19 @@ public class MovieController {
 		User currUser = urepository.findByUsername(currUserName);
 		Long currUserId = currUser.getId();
 
-		// create new Fav (class/object linking movies chosen by user to the user id)
+		// create new Fav (class/object linking movies chosen by user to the
+		// user id)
 		Fav fav = new Fav(currUserId, movieId);
 
 		// check if this movie already exists in this user's list:
-		// find the favs that have current movie id and check if user id is also the same
-		// could also be done the other way around: frepository.findByUserid(currUserid).size() ...
+		// find the favs that have current movie id and check if user id is also
+		// the same
+		// could also be done the other way around:
+		// frepository.findByUserid(currUserid).size() ...
 		Boolean unique = true;
 		for (int i = 0; i < frepository.findByMovieid(movieId).size(); i++) {
 			if ((frepository.findByMovieid(movieId).get(i).getMovieid() == movieId)
-					&& (frepository.findByUserid(currUserId).get(i).getUserid() == currUserId)) {
+					&& (frepository.findByMovieid(movieId).get(i).getUserid() == currUserId)) {
 				unique = false;
 			}
 		}
@@ -150,7 +162,7 @@ public class MovieController {
 		if (unique) {
 			frepository.save(fav);
 		}
-		//these are for dropdowns
+		// these are for dropdowns
 		model.addAttribute("genres", grepository.findAll());
 		model.addAttribute("countries", crepository.findAll());
 		return "redirect:/choosemovie";
@@ -167,8 +179,9 @@ public class MovieController {
 		// get the list of favs associated with the curent user
 		List<Fav> favList = frepository.findByUserid(currUserId);
 		List<Movie> movieList = new ArrayList<Movie>();
-		
-		// loop through the list of favs to get the movies and add them to movielist
+
+		// loop through the list of favs to get the movies and add them to
+		// movielist
 		for (int i = 0; i < favList.size(); i++) {
 			Long movie_id = favList.get(i).getMovieid();
 			movieList.add(mrepository.findOne(movie_id));
@@ -179,9 +192,79 @@ public class MovieController {
 
 	// remove a movie from personal page
 	@RequestMapping(value = "/remove/{id}", method = RequestMethod.GET)
-	public String removeMovie(@PathVariable("id") Long movieId, Model model) {
-		frepository.delete(frepository.findByMovieid(movieId));
+	public String removeMovie(@PathVariable("id") Long movieId, Model model, Principal principal) {
+		// get current user's id
+		String currUserName = principal.getName();
+		User currUser = urepository.findByUsername(currUserName);
+		Long currUserId = currUser.getId();
+
+		// only delete the movie from current user's list
+		for (int i = 0; i < frepository.findByMovieid(movieId).size(); i++) {
+			if ((frepository.findByMovieid(movieId).get(i).getMovieid() == movieId)
+					&& (frepository.findByMovieid(movieId).get(i).getUserid() == currUserId)) {
+
+				frepository.delete(frepository.findByMovieid(movieId).get(i).getId());
+			}
+		}
+
 		return "redirect:/userpage";
+	}
+
+	// REST
+
+	// RESTful service to get all movies
+	@RequestMapping(value = "/movies", method = RequestMethod.GET)
+	public @ResponseBody List<Movie> movieListRest() {
+		return (List<Movie>) mrepository.findAll();
+	}
+	
+	// REST get movie by id
+	@RequestMapping(value = "/movie/{id}", method = RequestMethod.GET)
+	public @ResponseBody Movie findMovieRest(@PathVariable("id") Long movieId) {
+		return mrepository.findOne(movieId);
+	}
+
+	// RESTful service to get all genres
+	@RequestMapping(value = "/genres", method = RequestMethod.GET)
+	public @ResponseBody List<Genre> genreListRest() {
+		return (List<Genre>) grepository.findAll();
+	}
+
+	// REST get genre by id
+	@RequestMapping(value = "/genre/{id}", method = RequestMethod.GET)
+	public @ResponseBody Genre findGenreRest(@PathVariable("id") Long genreId) {
+		return grepository.findOne(genreId);
+	}
+
+	// RESTful service to get all countries
+	@RequestMapping(value = "/countries", method = RequestMethod.GET)
+	public @ResponseBody List<Country> countryListRest() {
+		return (List<Country>) crepository.findAll();
+	}
+
+	// REST get country by id
+	@RequestMapping(value = "/country/{id}", method = RequestMethod.GET)
+	public @ResponseBody Country findCountryRest(@PathVariable("id") Long countryId) {
+		return crepository.findOne(countryId);
+	}
+
+	// RESTful service to get all users
+	@RequestMapping(value = "/users", method = RequestMethod.GET)
+	public @ResponseBody List<User> userListRest() {
+		return (List<User>) urepository.findAll();
+	}
+
+	// REST get user by id
+	@RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
+	public @ResponseBody User findUserRest(@PathVariable("id") Long userId) {
+		return urepository.findOne(userId);
+	}
+	
+	// RESTful service to delete movie by id
+	@RequestMapping(value = "/movie/{id}/delete", method = RequestMethod.GET)
+	public @ResponseBody String deleteMovieRest(@PathVariable("id") Long movieId) {
+		mrepository.delete(movieId);
+		return "Movie with id " + movieId + " deleted succesfully";
 	}
 
 }

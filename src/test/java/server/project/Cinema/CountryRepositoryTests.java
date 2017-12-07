@@ -28,7 +28,7 @@ public class CountryRepositoryTests {
 	
 	 @Test
 	    public void createNewCountry() {
-	    	Country country = new Country("Germany");
+	    	Country country = new Country("Russia");
 	    	crepository.save(country);
 	    	assertThat(country.getCountryid()).isNotNull();
 	    }
